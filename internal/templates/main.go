@@ -36,7 +36,6 @@ import (
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 
-	"github.com/rdeusser/cli"
 	"github.com/rdeusser/stacktrace"
 
 	"{{ .ModulePath }}/version"
@@ -47,7 +46,10 @@ type Options struct {
 }
 
 func (o *Options) InitDefaults() {
-	o.Debug = false
+	viper.SetEnvPrefix("{{ toEnv .ProjectName }}")
+	viper.AutomaticEnv()
+
+	o.Debug = viper.GetBool("debug")
 }
 
 func main() {
@@ -55,8 +57,6 @@ func main() {
 	options.InitDefaults()
 
 	log.Logger = log.Output(zerolog.ConsoleWriter{Out: os.Stdout})
-
-	cli.SetProjectName("{{ .ProjectName }}")
 
 	cmd := &cobra.Command{
 		Use:     "{{ .ProjectName }} [command]",
@@ -80,14 +80,11 @@ func main() {
 
 	cmd.PersistentFlags().BoolVar(&options.Debug, "debug", options.Debug, "Run in debug mode.")
 
-	viper.SetEnvPrefix("{{ .ProjectName }}")
-	viper.AutomaticEnv()
-
 	if err := cmd.Execute(); err != nil {
 		if options.Debug {
 			stacktrace.Throw(err)
 		}
 
-		log.Fatal().Msg(stacktrace.Error(err).Error())
+		log.Fatal().Msg(stacktrace.Unwrap(err).Error())
 	}
 }`

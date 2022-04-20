@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"go/format"
 	"path/filepath"
+	"strings"
 	"text/template"
 
 	"github.com/rs/zerolog/log"
@@ -13,6 +14,7 @@ import (
 
 var templateFuncs = template.FuncMap{
 	"backtick": backtick,
+	"toEnv":    toEnv,
 }
 
 type Config struct {
@@ -118,4 +120,11 @@ func doTemplate(t Template) ([]byte, error) {
 
 func backtick() string {
 	return "`"
+}
+
+func toEnv(s string) string {
+	s = strings.ToUpper(s)
+	s = strings.ReplaceAll(s, "-", "_")
+
+	return s
 }

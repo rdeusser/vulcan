@@ -84,6 +84,8 @@ func RunNew(options *NewOptions) error {
 		&scripts.BumpVersion{},
 		&scripts.CleanupNoise{},
 		&scripts.Tag{},
+		&templates.Buf{},
+		&templates.BufGen{},
 		&templates.Dockerfile{},
 		&templates.GitIgnore{},
 		&templates.GoMod{},
