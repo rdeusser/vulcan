@@ -70,16 +70,16 @@ help: ## Display this help text.
 
 .PHONY: tidy
 tidy: $(GOIMPORTS) ## Formats Go code including imports and cleans up noise.
-	@echo ">> formatting code"
+	@echo "==> Formatting code"
 	@$(GOIMPORTS) -local $(PKG) -w $(FILES_TO_FMT)
-	@echo ">> cleaning up noise"
+	@echo "==> Cleaning up noise"
 	@find . -type f \( -name "*.md" -o -name "*.go" \) | SED_BIN="$(SED)" xargs scripts/cleanup-noise.sh
-	@echo ">> running 'go mod tidy'"
+	@echo "==> Running 'go mod tidy'"
 	@go mod tidy
 
 .PHONY: generate
 generate: ## Generate code.
-	@echo ">> generating code"
+	@echo "==> Generating code"
 	@go generate ./...
 {{- if .ProtobufSupport }}
 	@buf generate
@@ -87,7 +87,7 @@ generate: ## Generate code.
 
 .PHONY: lint
 lint: $(REVIVE) ## Run lint tools.
-	@echo ">> running linting tools"
+	@echo "==> Running linting tools"
 	@revive -config revive.toml ./...
 {{- if .ProtobufSupport }}
 	@buf lint
@@ -95,17 +95,17 @@ lint: $(REVIVE) ## Run lint tools.
 
 .PHONY: test
 test: ## Runs all {{ .ProjectName }}'s unit tests. This excludes tests in ./test/e2e.
-	@echo ">> running unit tests (without /test/e2e)"
+	@echo "==> Running unit tests (without /test/e2e)"
 	@go test -v -coverprofile=coverage.out $(shell go list ./... | grep -v /test/e2e);
 
 .PHONY: test/e2e
 test/e2e: ## Runs all {{ .ProjectName }}'s e2e tests from test/e2e.
-	@echo ">> running e2e tests"
+	@echo "==> Running e2e tests"
 	@go test -v -tags=e2e -coverprofile=coverage.out ./test/e2e/...
 
 .PHONY: build
 build: ## Build {{ .ProjectName }}.
-	@echo ">> building {{ .ProjectName }}"
+	@echo "==> Building {{ .ProjectName }}"
 	@-CGO_ENABLED=0 \
 		go build \
 		-o bin/{{ .ProjectName }} \
@@ -113,12 +113,12 @@ build: ## Build {{ .ProjectName }}.
 
 .PHONY: install
 install: build ## Install {{ .ProjectName }}.
-	@echo ">> installing {{ .ProjectName }}"
+	@echo "==> Installing {{ .ProjectName }}"
 	mv ./bin/{{ .ProjectName }} $(GOBIN)/{{ .ProjectName }}
 
 .PHONY: docker-build
 docker-build: ## Build docker image.
-	@echo ">> building docker image"
+	@echo "==> Building docker image"
 	@docker build -t $(DOCKER_IMAGE_REPO):$(VERSION) --build-arg GOPROXY=$(GOPROXY) .
 
 .PHONY: bump-version
