@@ -23,9 +23,9 @@ func (t *Buf) SetTemplateDefaults() error {
 }
 
 const bufTemplate = `version: v1
-build:
-  roots:
-    - .
 breaking:
   use:
-    - FILE`
+    - FILE
+lint:
+  use:
+    - DEFAULT`
