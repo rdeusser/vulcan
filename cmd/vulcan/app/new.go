@@ -5,7 +5,6 @@ import (
 	"os"
 	"path/filepath"
 
-	"github.com/rdeusser/cli"
 	"github.com/rdeusser/stacktrace"
 	"github.com/rs/zerolog/log"
 	"github.com/spf13/cobra"
@@ -105,12 +104,6 @@ func RunNew(options *NewOptions) error {
 			return stacktrace.Propagate(err, "walking '%s' directory", path)
 		}
 
-		if d.IsDir() {
-			cli.Debug("Walking '%s'", scriptsDir)
-		} else {
-			cli.Debug("Looking at '%s'", path)
-		}
-
 		if !d.IsDir() && filepath.Ext(path) == ".sh" {
 			if err := os.Chmod(path, 0o755); err != nil {
 				return stacktrace.Propagate(err, "marking script as executable")
@@ -127,8 +120,17 @@ func RunNew(options *NewOptions) error {
 		return stacktrace.Propagate(err, "running 'go mod tidy'")
 	}
 
-	if err := git.Init(currentDir, options.Branch, options.ModulePath); err != nil {
+	repo, err := git.NewRepo(currentDir, options.Branch)
+	if err != nil {
 		return stacktrace.Propagate(err, "initializing git repo")
+	}
+
+	if err := repo.AddAll(); err != nil {
+		return stacktrace.Propagate(err, "adding files")
+	}
+
+	if err := repo.Commit(git.InitialCommit); err != nil {
+		return stacktrace.Propagate(err, "committing files")
 	}
 
 	log.Info().Msg("Initialized git repo")
