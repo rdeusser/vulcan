@@ -4,6 +4,7 @@ import (
 	"io/fs"
 	"os"
 	"path/filepath"
+	"strings"
 
 	"github.com/rdeusser/stacktrace"
 	"github.com/rs/zerolog/log"
@@ -65,12 +66,18 @@ func RunNew(options *NewOptions) error {
 		ProtobufSupport: options.ProtobufSupport,
 	}
 
+	existingRepo := false
+
 	if err := os.Mkdir(config.ProjectName, 0o755); err != nil {
-		return err
+		if !strings.Contains(err.Error(), "file exists") {
+			return stacktrace.Propagate(err, "creating directory")
+		}
+
+		existingRepo = true
 	}
 
 	if err := os.Chdir(config.ProjectName); err != nil {
-		return err
+		return stacktrace.Propagate(err, "changing directory")
 	}
 
 	currentDir, err := filepath.Abs(".")
@@ -120,20 +127,23 @@ func RunNew(options *NewOptions) error {
 		return stacktrace.Propagate(err, "running 'go mod tidy'")
 	}
 
-	repo, err := git.NewRepo(currentDir, options.Branch)
-	if err != nil {
-		return stacktrace.Propagate(err, "initializing git repo")
+	if !existingRepo {
+		repo, err := git.NewRepo(currentDir, options.Branch)
+		if err != nil {
+			return stacktrace.Propagate(err, "initializing git repo")
+		}
+
+		if err := repo.AddAll(); err != nil {
+			return stacktrace.Propagate(err, "adding files")
+		}
+
+		if err := repo.Commit(git.InitialCommit); err != nil {
+			return stacktrace.Propagate(err, "committing files")
+		}
+
+		log.Info().Msg("Initialized git repo")
 	}
 
-	if err := repo.AddAll(); err != nil {
-		return stacktrace.Propagate(err, "adding files")
-	}
-
-	if err := repo.Commit(git.InitialCommit); err != nil {
-		return stacktrace.Propagate(err, "committing files")
-	}
-
-	log.Info().Msg("Initialized git repo")
 	log.Info().Msgf("Successfully generated project at %s", currentDir)
 
 	return nil
