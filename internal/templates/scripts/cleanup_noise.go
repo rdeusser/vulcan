@@ -9,6 +9,10 @@ type CleanupNoise struct {
 	scaffold.ProjectNameMixin
 }
 
+func (t *CleanupNoise) GetIfExistsAction() scaffold.IfExistsAction {
+	return t.IfExistsAction
+}
+
 func (t *CleanupNoise) SetTemplateDefaults() error {
 	if t.Path == "" {
 		t.Path = "scripts/cleanup-noise.sh"

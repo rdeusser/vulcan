@@ -68,6 +68,16 @@ func (s *Scaffolder) Execute(config *Config, templates ...Template) error {
 }
 
 func (s *Scaffolder) writeFile(t Template) error {
+	switch t.GetIfExistsAction() {
+	case Skip:
+		return nil
+	case Error:
+		return ErrFileAlreadyExists
+	case Overwrite:
+	default:
+		return ErrUnknownAction
+	}
+
 	path := t.GetPath()
 
 	if err := s.fs.MkdirAll(filepath.Dir(path), 0o755); err != nil {

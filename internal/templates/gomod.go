@@ -10,13 +10,17 @@ type GoMod struct {
 	scaffold.ProjectNameMixin
 }
 
+func (t *GoMod) GetIfExistsAction() scaffold.IfExistsAction {
+	return t.IfExistsAction
+}
+
 func (t *GoMod) SetTemplateDefaults() error {
 	if t.Path == "" {
 		t.Path = "go.mod"
 	}
 
 	t.TemplateBody = goModTemplate
-	t.IfExistsAction = scaffold.Overwrite
+	t.IfExistsAction = scaffold.Skip
 
 	return nil
 }

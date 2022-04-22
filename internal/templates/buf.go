@@ -11,6 +11,10 @@ type Buf struct {
 	scaffold.ProtobufMixin
 }
 
+func (t *Buf) GetIfExistsAction() scaffold.IfExistsAction {
+	return t.IfExistsAction
+}
+
 func (t *Buf) SetTemplateDefaults() error {
 	if t.Path == "" {
 		t.Path = "buf.yaml"

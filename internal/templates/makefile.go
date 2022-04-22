@@ -13,6 +13,10 @@ type Makefile struct {
 	scaffold.ProtobufMixin
 }
 
+func (t *Makefile) GetIfExistsAction() scaffold.IfExistsAction {
+	return t.IfExistsAction
+}
+
 func (t *Makefile) SetTemplateDefaults() error {
 	if t.Path == "" {
 		t.Path = "Makefile"

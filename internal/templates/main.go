@@ -14,6 +14,10 @@ type Main struct {
 	scaffold.ProjectNameMixin
 }
 
+func (t *Main) GetIfExistsAction() scaffold.IfExistsAction {
+	return t.IfExistsAction
+}
+
 func (t *Main) SetTemplateDefaults() error {
 	if t.Path == "" {
 		t.Path = fmt.Sprintf("cmd/%s/main.go", t.ProjectName)

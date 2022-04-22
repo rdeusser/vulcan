@@ -9,6 +9,10 @@ type Readme struct {
 	scaffold.ProjectNameMixin
 }
 
+func (t *Readme) GetIfExistsAction() scaffold.IfExistsAction {
+	return t.IfExistsAction
+}
+
 func (t *Readme) SetTemplateDefaults() error {
 	if t.Path == "" {
 		t.Path = "README.md"

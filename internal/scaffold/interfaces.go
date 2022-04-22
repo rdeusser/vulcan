@@ -7,6 +7,9 @@ type Template interface {
 	// GetBody returns the template body.
 	GetBody() string
 
+	// GetIfExistsAction determines what to do if the file already exists.
+	GetIfExistsAction() IfExistsAction
+
 	// SetTemplateDefaults sets the default values for templates.
 	SetTemplateDefaults() error
 }

@@ -10,7 +10,7 @@ const (
 	// Error returns an error and stops processing.
 	Error
 
-	// Overwrite truncates and overwrites the existing file.
+	// Overwrite overwrites the existing file.
 	Overwrite
 )
 

@@ -9,6 +9,10 @@ type GitIgnore struct {
 	scaffold.ProjectNameMixin
 }
 
+func (t *GitIgnore) GetIfExistsAction() scaffold.IfExistsAction {
+	return t.IfExistsAction
+}
+
 func (t *GitIgnore) SetTemplateDefaults() error {
 	if t.Path == "" {
 		t.Path = ".gitignore"

@@ -9,6 +9,10 @@ type Version struct {
 	scaffold.ProjectNameMixin
 }
 
+func (t *Version) GetIfExistsAction() scaffold.IfExistsAction {
+	return t.IfExistsAction
+}
+
 func (t *Version) SetTemplateDefaults() error {
 	if t.Path == "" {
 		t.Path = "version/version.go"

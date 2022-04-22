@@ -9,6 +9,10 @@ type BumpVersion struct {
 	scaffold.ProjectNameMixin
 }
 
+func (t *BumpVersion) GetIfExistsAction() scaffold.IfExistsAction {
+	return t.IfExistsAction
+}
+
 func (t *BumpVersion) SetTemplateDefaults() error {
 	if t.Path == "" {
 		t.Path = "scripts/bump-version.sh"

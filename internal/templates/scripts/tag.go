@@ -9,6 +9,10 @@ type Tag struct {
 	scaffold.ProjectNameMixin
 }
 
+func (t *Tag) GetIfExistsAction() scaffold.IfExistsAction {
+	return t.IfExistsAction
+}
+
 func (t *Tag) SetTemplateDefaults() error {
 	if t.Path == "" {
 		t.Path = "scripts/tag.sh"

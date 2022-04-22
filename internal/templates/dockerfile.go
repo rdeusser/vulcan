@@ -9,6 +9,10 @@ type Dockerfile struct {
 	scaffold.ProjectNameMixin
 }
 
+func (t *Dockerfile) GetIfExistsAction() scaffold.IfExistsAction {
+	return t.IfExistsAction
+}
+
 func (t *Dockerfile) SetTemplateDefaults() error {
 	if t.Path == "" {
 		t.Path = "Dockerfile"
