@@ -52,7 +52,7 @@ export GO111MODULE
 GOIMPORTS_VERSION             ?= master
 GOIMPORTS                     ?= $(GOBIN)/goimports
 
-REVIVE_VERSION                ?= v1.1.4
+REVIVE_VERSION                ?= v1.2.1
 REVIVE                        ?= $(GOBIN)/revive
 
 {{- if .ProtobufSupport -}}
@@ -118,7 +118,7 @@ build: ## Build {{ .ProjectName }}.
 .PHONY: install
 install: build ## Install {{ .ProjectName }}.
 	@echo "==> Installing {{ .ProjectName }}"
-	mv ./bin/{{ .ProjectName }} $(GOBIN)/{{ .ProjectName }}
+	@mv ./bin/{{ .ProjectName }} $(GOBIN)/{{ .ProjectName }}
 
 .PHONY: docker-build
 docker-build: ## Build docker image.
