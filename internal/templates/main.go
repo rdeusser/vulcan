@@ -35,12 +35,14 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/rs/zerolog"
-	"github.com/rs/zerolog/log"
+	"github.com/mattn/go-isatty"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
+	"go.uber.org/zap"
+	"go.uber.org/zap/zapcore"
 
 	"github.com/rdeusser/stacktrace"
+	"github.com/rdeusser/x/zappretty"
 
 	"{{ .ModulePath }}/version"
 )
@@ -60,17 +62,38 @@ func main() {
 	options := &Options{}
 	options.InitDefaults()
 
-	log.Logger = log.Output(zerolog.ConsoleWriter{Out: os.Stdout})
+	atom := zap.NewAtomicLevel()
+	cfg := zap.NewProductionEncoderConfig()
+
+	zappretty.Register(cfg)
+
+	cliEncoder := zappretty.NewCLIEncoder(cfg)
+	jsonEncoder := zapcore.NewJSONEncoder(cfg)
+
+	leveler := zap.LevelEnablerFunc(func(level zapcore.Level) bool {
+		return level >= atom.Level()
+	})
+
+	var core zapcore.Core
+
+	if isatty.IsTerminal(os.Stdout.Fd()) || isatty.IsCygwinTerminal(os.Stdout.Fd()) {
+		core = zapcore.NewCore(cliEncoder, os.Stdout, leveler)
+	} else {
+		core = zapcore.NewCore(jsonEncoder, os.Stdout, leveler)
+	}
+
+	logger := zap.New(core, zap.AddStacktrace(atom)).Named("{{ .ProjectName }}")
+	defer logger.Sync()
 
 	cmd := &cobra.Command{
 		Use:     "{{ .ProjectName }} [command]",
 		Short:   "Project description",
 		Version: version.GetHumanVersion(),
 		PersistentPreRun: func(cmd *cobra.Command, args []string) {
-			zerolog.SetGlobalLevel(zerolog.InfoLevel)
+			atom.SetLevel(zapcore.InfoLevel)
 
 			if options.Debug {
-				zerolog.SetGlobalLevel(zerolog.DebugLevel)
+				atom.SetLevel(zapcore.DebugLevel)
 			}
 		},
 		Run: func(cmd *cobra.Command, args []string) {
@@ -89,6 +112,6 @@ func main() {
 			stacktrace.Throw(err)
 		}
 
-		log.Fatal().Msg(stacktrace.Unwrap(err).Error())
+		logger.Fatal(stacktrace.Unwrap(err).Error())
 	}
 }`
