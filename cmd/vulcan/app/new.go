@@ -39,7 +39,6 @@ func NewCmdNew() *cobra.Command {
 		RunE: func(cmd *cobra.Command, args []string) error {
 			if len(args) != 1 {
 				log.Error().Msg("the Go module name should be the only argument to 'new'")
-
 				os.Exit(1)
 			}
 

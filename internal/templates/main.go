@@ -37,12 +37,10 @@ import (
 
 	"github.com/mattn/go-isatty"
 	"github.com/spf13/cobra"
-	"github.com/spf13/viper"
-	"go.uber.org/zap"
 	"go.uber.org/zap/zapcore"
 
 	"github.com/rdeusser/stacktrace"
-	"github.com/rdeusser/x/zappretty"
+	"github.com/rdeusser/log"
 
 	"{{ .ModulePath }}/version"
 )
@@ -52,37 +50,14 @@ type Options struct {
 }
 
 func (o *Options) InitDefaults() {
-	viper.SetEnvPrefix("{{ toEnv .ProjectName }}")
-	viper.AutomaticEnv()
-
-	o.Debug = viper.GetBool("debug")
+	o.Debug = false
 }
 
 func main() {
 	options := &Options{}
 	options.InitDefaults()
 
-	atom := zap.NewAtomicLevel()
-	cfg := zap.NewProductionEncoderConfig()
-
-	zappretty.Register(cfg)
-
-	cliEncoder := zappretty.NewCLIEncoder(cfg)
-	jsonEncoder := zapcore.NewJSONEncoder(cfg)
-
-	leveler := zap.LevelEnablerFunc(func(level zapcore.Level) bool {
-		return level >= atom.Level()
-	})
-
-	var core zapcore.Core
-
-	if isatty.IsTerminal(os.Stdout.Fd()) || isatty.IsCygwinTerminal(os.Stdout.Fd()) {
-		core = zapcore.NewCore(cliEncoder, os.Stdout, leveler)
-	} else {
-		core = zapcore.NewCore(jsonEncoder, os.Stdout, leveler)
-	}
-
-	logger := zap.New(core, zap.AddStacktrace(atom)).Named("{{ .ProjectName }}")
+	logger, atom := log.New()
 	defer logger.Sync()
 
 	cmd := &cobra.Command{

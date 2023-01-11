@@ -52,12 +52,12 @@ export GO111MODULE
 GOIMPORTS_VERSION             ?= master
 GOIMPORTS                     ?= $(GOBIN)/goimports
 
-REVIVE_VERSION                ?= v1.2.1
+REVIVE_VERSION                ?= latest
 REVIVE                        ?= $(GOBIN)/revive
 
 {{- if .ProtobufSupport -}}
-BUF_VERSION		      ?= v0.20.5
-BUF			      ?= $(GOBIN)/buf
+BUF_VERSION                   ?= latest
+BUF                           ?= $(GOBIN)/buf
 PROTOC_GEN_BUF_CHECK_BREAKING ?= $(GOBIN)/protoc-gen-buf-check-breaking
 PROTOC_GEN_BUF_CHECK_LINT     ?= $(GOBIN)/protoc-gen-buf-check-lint
 {{- end }}
