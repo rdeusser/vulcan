@@ -33,9 +33,7 @@ const mainTemplate = `package main
 
 import (
 	"fmt"
-	"os"
 
-	"github.com/mattn/go-isatty"
 	"github.com/spf13/cobra"
 	"go.uber.org/zap/zapcore"
 
@@ -64,6 +62,9 @@ func main() {
 		Use:     "{{ .ProjectName }} [command]",
 		Short:   "Project description",
 		Version: version.GetHumanVersion(),
+		CompletionOptions: cobra.CompletionOptions{
+			HiddenDefaultCmd: true,
+		},
 		PersistentPreRun: func(cmd *cobra.Command, args []string) {
 			atom.SetLevel(zapcore.InfoLevel)
 
@@ -79,6 +80,11 @@ func main() {
 		SilenceUsage:  true,
 		SilenceErrors: true, // we log and return our own errors and if this is false the errors are printed twice
 	}
+
+	cmd.SetHelpCommand(&cobra.Command{
+		Use:    "no-help",
+		Hidden: true,
+	})
 
 	cmd.PersistentFlags().BoolVar(&options.Debug, "debug", options.Debug, "Run in debug mode.")
 
